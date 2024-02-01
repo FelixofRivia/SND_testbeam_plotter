@@ -74,20 +74,28 @@ def plot_shower_start(folder_path, run_data):
     }
     energies = [100,140,180,240,300]
     counters_3w = [0,0,0,0,0]
+    counters_2w = [0,0,0,0,0]
     counters_1w = [0,0,0,0,0]
     colors = [ROOT.kRed,ROOT.kGreen,ROOT.kBlue,ROOT.kMagenta,ROOT.kCyan,ROOT.kOrange,ROOT.kSpring,ROOT.kTeal,ROOT.kViolet,ROOT.kYellow]
     # Create 5 canvases
     num_canvases = len(energies)
     canvases_3w = [ROOT.TCanvas(f"{energies[i]}_GeV_3W_BOCut", f"{energies[i]}_GeV_3W_BOCut") for i in range(num_canvases)] + [ROOT.TCanvas(f"{energies[i]}_GeV_3W_GuilCut", f"{energies[i]}_GeV_3W_GuilCut") for i in range(num_canvases)]
     canvases_full_3w = [ROOT.TCanvas(f"{energies[i]}_GeV_3W_full_BOCut", f"{energies[i]}_GeV_3W_full_BOCut") for i in range(num_canvases)] + [ROOT.TCanvas(f"{energies[i]}_GeV_3W_full_GuilCut", f"{energies[i]}_GeV_3W_full") for i in range(num_canvases)]
+    canvases_2w = [ROOT.TCanvas(f"{energies[i]}_GeV_2W_BOCut", f"{energies[i]}_GeV_2W_BOCut") for i in range(num_canvases)] + [ROOT.TCanvas(f"{energies[i]}_GeV_2W_GuilCut", f"{energies[i]}_GeV_2W_GuilCut") for i in range(num_canvases)]
+    canvases_full_2w = [ROOT.TCanvas(f"{energies[i]}_GeV_2W_full_BOCut", f"{energies[i]}_GeV_2W_full_BOCut") for i in range(num_canvases)] + [ROOT.TCanvas(f"{energies[i]}_GeV_2W_full_GuilCut", f"{energies[i]}_GeV_2W_full") for i in range(num_canvases)]
     canvases_1w = [ROOT.TCanvas(f"{energies[i]}_GeV_1W_BOCut", f"{energies[i]}_GeV_1W_BOCut") for i in range(num_canvases)] + [ROOT.TCanvas(f"{energies[i]}_GeV_1W_GuilCut", f"{energies[i]}_GeV_1W_GuilCut") for i in range(num_canvases)]
     canvases_full_1w = [ROOT.TCanvas(f"{energies[i]}_GeV_1W_full_BOCut", f"{energies[i]}_GeV_1W_full_BOCut") for i in range(num_canvases)] + [ROOT.TCanvas(f"{energies[i]}_GeV_1W_full_GuilCut", f"{energies[i]}_GeV_1W_full") for i in range(num_canvases)]
     legends_3w = [ROOT.TLegend(0.1, 0.7, 0.3, 0.9) for i in range(num_canvases)]
+    legends_2w = [ROOT.TLegend(0.1, 0.7, 0.3, 0.9) for i in range(num_canvases)]
     legends_1w = [ROOT.TLegend(0.1, 0.7, 0.3, 0.9) for i in range(num_canvases)]
 
     for i in range(2*num_canvases):
         canvases_3w[i].Divide(3,1)
         canvases_full_3w[i].Divide(3,1)
+        canvases_2w[i].Divide(3,1)
+        canvases_full_2w[i].Divide(3,1)
+        canvases_1w[i].Divide(3,1)
+        canvases_full_1w[i].Divide(3,1)
 
     # Get a list of files in the specified folder
     files = [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f))]
@@ -235,6 +243,132 @@ def plot_shower_start(folder_path, run_data):
             root_file.Close()
             counters_3w[index] += 1
 
+        if (wall == 2):
+
+            root_file = ROOT.TFile.Open("output_analysis/" + file_name)
+            root_file.cd()
+
+            h1_f = root_file.Get("Cut_ShowerStart_with_clusters")
+            h1_f.Scale(1.0 / h1_f.Integral())
+            h1_f.SetLineColor(colors[counters_2w[index]%len(colors)])
+            h1_f.GetYaxis().SetTitle("Fraction of showers")
+            legends_2w[index].AddEntry(h1_f, f"r_{run}", "f")
+            legends_2w[index].SetFillStyle(0)
+            legends_2w[index].SetBorderSize(0)
+            legends_2w[index].SetTextSize(0.015)
+
+            h2_f = root_file.Get("Cut_ShowerStart_with_density")
+            h2_f.Scale(1.0 / h2_f.Integral())
+            h2_f.SetLineColor(colors[counters_2w[index]%len(colors)])
+            h2_f.GetYaxis().SetTitle("Fraction of showers")
+            
+            h3_f = root_file.Get("Cut_ShowerStart_with_F")
+            h3_f.Scale(1.0 / h3_f.Integral())
+            h3_f.SetLineColor(colors[counters_2w[index]%len(colors)])
+            h3_f.GetYaxis().SetTitle("Fraction of showers")
+
+            option = "hist colz NOSTATS" if counters_2w[index] == 0 else "hist colz same NOSTATS"
+            canvases_full_2w[index].cd(1)
+            h1_f.DrawCopy(option)
+            if counters_2w[index] == 0: legends_2w[index].Draw()
+            canvases_full_2w[index].cd(2)
+            h2_f.DrawCopy(option)
+            if counters_2w[index] == 0: legends_2w[index].Draw()
+            canvases_full_2w[index].cd(3)
+            h3_f.DrawCopy(option)
+            if counters_2w[index] == 0: legends_2w[index].Draw()
+
+            h1 = h1_f
+            h1.SetAxisRange(0.5,4.5,"X")
+            h1.Scale(1.0 / h1.Integral())
+            h1.SetLineColor(colors[counters_2w[index]%len(colors)])
+            h1.GetYaxis().SetTitle("Fraction of showers")
+
+            h2 = h2_f
+            h2.SetAxisRange(0.5,4.5,"X")
+            h2.Scale(1.0 / h2.Integral())
+            h2.SetLineColor(colors[counters_2w[index]%len(colors)])
+            h2.GetYaxis().SetTitle("Fraction of showers")
+
+            h3 = h3_f
+            h3.SetAxisRange(0.5,4.5,"X")
+            h3.Scale(1.0 / h3.Integral())
+            h3.SetLineColor(colors[counters_2w[index]%len(colors)])
+            h3.GetYaxis().SetTitle("Fraction of showers")
+
+            canvases_2w[index].cd(1)
+            h1.DrawCopy(option)
+            if counters_2w[index] == 0: legends_2w[index].Draw()
+            canvases_2w[index].cd(2)
+            h2.DrawCopy(option)
+            if counters_2w[index] == 0: legends_2w[index].Draw()
+            canvases_2w[index].cd(3)
+            h3.DrawCopy(option)
+            if counters_2w[index] == 0: legends_2w[index].Draw()
+
+            ROOT.gPad.Modified()
+            ROOT.gPad.Update()
+
+            h4_f = root_file.Get("GuilCut_ShowerStart_with_clusters")
+            h4_f.Scale(1.0 / h4_f.Integral())
+            h4_f.SetLineColor(colors[counters_2w[index]%len(colors)])
+            h4_f.GetYaxis().SetTitle("Fraction of showers")
+
+            h5_f = root_file.Get("GuilCut_ShowerStart_with_density")
+            h5_f.Scale(1.0 / h5_f.Integral())
+            h5_f.SetLineColor(colors[counters_2w[index]%len(colors)])
+            h5_f.GetYaxis().SetTitle("Fraction of showers")
+            
+            h6_f = root_file.Get("GuilCut_ShowerStart_with_F")
+            h6_f.Scale(1.0 / h6_f.Integral())
+            h6_f.SetLineColor(colors[counters_2w[index]%len(colors)])
+            h6_f.GetYaxis().SetTitle("Fraction of showers")
+
+            option = "hist colz NOSTATS" if counters_2w[index] == 0 else "hist colz same NOSTATS"
+            canvases_full_2w[index + num_canvases].cd(1)
+            h4_f.DrawCopy(option)
+            if counters_2w[index] == 0: legends_2w[index].Draw()
+            canvases_full_2w[index + num_canvases].cd(2)
+            h5_f.DrawCopy(option)
+            if counters_2w[index] == 0: legends_2w[index].Draw()
+            canvases_full_2w[index + num_canvases].cd(3)
+            h6_f.DrawCopy(option)
+            if counters_2w[index] == 0: legends_2w[index].Draw()
+
+            h4 = h4_f
+            h4.SetAxisRange(0.5,4.5,"X")
+            h4.Scale(1.0 / h4.Integral())
+            h4.SetLineColor(colors[counters_2w[index]%len(colors)])
+            h4.GetYaxis().SetTitle("Fraction of showers")
+
+            h5 = h5_f
+            h5.SetAxisRange(0.5,4.5,"X")
+            h5.Scale(1.0 / h5.Integral())
+            h5.SetLineColor(colors[counters_2w[index]%len(colors)])
+            h5.GetYaxis().SetTitle("Fraction of showers")
+
+            h6 = h6_f
+            h6.SetAxisRange(0.5,4.5,"X")
+            h6.Scale(1.0 / h6.Integral())
+            h6.SetLineColor(colors[counters_2w[index]%len(colors)])
+            h6.GetYaxis().SetTitle("Fraction of showers")
+
+            canvases_2w[index + num_canvases].cd(1)
+            h4.DrawCopy(option)
+            if counters_2w[index] == 0: legends_2w[index].Draw()
+            canvases_2w[index + num_canvases].cd(2)
+            h5.DrawCopy(option)
+            if counters_2w[index] == 0: legends_2w[index].Draw()
+            canvases_2w[index + num_canvases].cd(3)
+            h6.DrawCopy(option)
+            if counters_2w[index] == 0: legends_2w[index].Draw()
+
+            ROOT.gPad.Modified()
+            ROOT.gPad.Update()
+
+            root_file.Close()
+            counters_2w[index] += 1
+
         elif (wall == 1):
 
             root_file = ROOT.TFile.Open("output_analysis/" + file_name)
@@ -370,6 +504,10 @@ def plot_shower_start(folder_path, run_data):
         canvases_full_3w[n].Write()
         canvases_3w[n].cd(0)
         canvases_3w[n].Write()
+        canvases_full_2w[n].cd(0)
+        canvases_full_2w[n].Write()
+        canvases_2w[n].cd(0)
+        canvases_2w[n].Write()
         canvases_full_1w[n].cd(0)
         canvases_full_1w[n].Write()
         canvases_1w[n].cd(0)
@@ -382,6 +520,7 @@ def plot_shower_start(folder_path, run_data):
 
         # Extract the text between the underscore and period
         run = int(file_name[underscore_index + 1 : period_index])
+        wall = return_Walls(run_data, run)
         gev = return_GeV(run_data, run)
 
         h_cluster = ROOT.TH2F(f"Clusters_{run}_{gev}_GeV", f"Clusters_{run}_{gev}_GeV; BO_cut; Guil_cut", 5, 0, 5, 5, 0, 5)
