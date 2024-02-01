@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>SND@LHC BO analysis</title>
+</head>
+<body>
+
+    <header>
+        <nav>
+            <ul>
+                <li><a href="#" onclick="showTable()">TB Output Files</a></li>
+                <li><a href="#" onclick="showImages('section2')">Images 1</a></li>
+                <li><a href="#" onclick="showImages('section3')">Images 2</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="tableSection" style="display:none;">
+            <h2>Processed data from TB</h2>
+            <table id="data-table">
+                <!-- Table content will be dynamically generated here -->
+            </table>
+        </section>
+
+        <section id="section2" style="display:none;">
+            <h2>Images Section 1</h2>
+            <div class="image-container" onclick="viewFullscreen('image1.jpg')">
+                <img src="image1.jpg" alt="Image 1" class="thumbnail">
+            </div>
+            <div class="image-container" onclick="viewFullscreen('image2.jpg')">
+                <img src="image2.jpg" alt="Image 2" class="thumbnail">
+            </div>
+        </section>
+
+        <section id="section3" style="display:none;">
+            <h2>Images Section 2</h2>
+            <div class="image-container" onclick="viewFullscreen('image3.jpg')">
+                <img src="image3.jpg" alt="Image 3" class="thumbnail">
+            </div>
+            <div class="image-container" onclick="viewFullscreen('image4.jpg')">
+                <img src="image4.jpg" alt="Image 4" class="thumbnail">
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
